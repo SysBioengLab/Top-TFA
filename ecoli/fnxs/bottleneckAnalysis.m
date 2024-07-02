@@ -94,7 +94,7 @@ for i=1:nTop
 end
 
 % Save on excel
-filename = strcat('Results\Excels\final_ec3.xlsx');
+filename = strcat('Results\AdditionalInformation_E_coli.xlsx');
 sheet = 'Bottleneck analysis';
 writecell(dGrRxns,filename,'Sheet',sheet,'Range','B4')
 writematrix(1:nTop,filename,'Sheet',sheet,'Range','C3')

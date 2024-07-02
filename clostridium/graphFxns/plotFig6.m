@@ -1,9 +1,10 @@
 function plotFig6(model,sampleName1,sampleName2)
 % Generate graph for figure 6
+disp("Executing from Top-TFA")
 
-load(strcat("samples\tests\",sampleName1,".mat"),"bigUni")
+load(strcat("samples\",sampleName1,".mat"),"bigUni")
 sample1 = bigUni; clear bigUni;
-load(strcat("samples\tests\",sampleName2,".mat"),"bigNouni")
+load(strcat("samples\",sampleName2,".mat"),"bigNouni")
 sample2 = bigNouni; clear bigNouni;
 
 % Inicialización de parametros

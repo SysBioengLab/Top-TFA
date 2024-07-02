@@ -181,7 +181,7 @@ for i=1:nT
     if nT > 1
         save(strcat("samples\sample_",name,"_top_",num2str(i),".mat"),"sample")
     else
-        save(strcat("samples\tests\",name,".mat"),"sample")
+        save(strcat("samples\",name,".mat"),"sample")
     end
 
 end
