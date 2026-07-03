@@ -1,23 +1,20 @@
-# Top-TFA
+# TOPologically-constrained Thermodynamics-based Flux Analysis (Top-TFA)
 
-MATLAB code base accompanying the manuscript *"Thermodynamically feasible mass-balanced
+This MATLAB code base accompanies the manuscript *"Thermodynamically feasible mass-balanced
 metabolic states constrained by network topology and a linear flux-force relationship"*
-(Zapararte, Marcellin, Nielsen and Saa). The repository contains all the scripts,
+(Zapararte, Marcellin, Nielsen and Saa). The repository contains the scripts,
 functions, models and pre-computed data required to reproduce the two case studies of the
 work and the figures derived from them.
 
-The full write-up of the method and the discussion of the results are available in the
-accompanying documents `manuscript.pdf` and `SI.pdf`, located in this same folder.
-
 ---
 
-## What the code does
+## Overview
 
-At a high level, the code implements a workflow that combines three ingredients on top of a
+At a high level, the code implements a workflow that combines the three steps of Top-TFA using a
 constraint-based metabolic model:
 
 1. **Network-topology enumeration** — an exhaustive, loopless enumeration of all
-   thermodynamically consistent reaction directionalities (the *topologies*) that a model
+   thermodynamically consistent reaction directionalities (flux topes) that a model
    can adopt.
 2. **Thermodynamic and mass-balance constraints** — Gibbs free-energy of reaction (ΔGr),
    metabolite-concentration and charge/proton constraints layered on top of the classic
@@ -27,7 +24,7 @@ constraint-based metabolic model:
 
 These ingredients are used to (i) determine which topologies are feasible, (ii) tighten the
 flux and ΔGr variability ranges, (iii) sample the feasible solution space, and (iv) perform
-a bottleneck / thermodynamic-sensitivity analysis. The pipeline is exercised on two
+a bottleneck / thermodynamic-sensitivity analysis. The pipeline is illustrated on two
 biological systems that give the two main case-study folders.
 
 ---
@@ -46,16 +43,15 @@ Top-TFA/
 └── README.md                  This file
 ```
 
-### `DFS/` — Topology enumeration engine
+### `DFS/` — Topology enumeration algorithm
 
-Shared machinery that enumerates every feasible reaction directionality of a model using a
+Enumerates every feasible reaction directionality of a model using a
 depth-first search (DFS) over the reversible reactions, pruned by loopless and
 mass-balance infeasibility patterns.
 
-- `findTopologiesNewClusters3.m` — the driver called by both case studies. It builds the
-  loopless MILP structure, runs a loopless FVA, constructs the directionality search space,
-  discovers infeasible balance/loop patterns, and compiles the full set of valid topologies
-  (the *topology / feasibility matrix*, `tfm`).
+- `findTopologiesNewClusters3.m` — It builds the loopless MILP structure, runs a loopless FVA,
+  constructs the directionality search space, identifies infeasible balance/loop patterns,
+  and compiles the full set of valid topologies (the *topology / feasibility matrix*, `tfm`).
 - `fxns/` — supporting routines: loopless structure builders (`looplessStructureLP/MILP.m`),
   loopless FVA (`looplessFVA.m`), sparse null-space computation (`fastSNP.m`,
   `nullSparseBasisStructure_GUROBI.m`), the DFS pattern searches
@@ -68,16 +64,17 @@ mass-balance infeasibility patterns.
 
 ### `looplessFxns/` — Flux-sampling library
 
-A self-contained Monte-Carlo sampling library (based on loopless flux sampling, Saa et al.)
-used by both case studies to draw random points from the feasible thermodynamic solution
-space. Key entry points are `looplessFluxSampler.m` / `newLooplessFluxSampler.m`, with the
-samplers `ADSB.m` (Adaptive Directions Sampling on a Box), `ll_ACHRB.m` and `HitAndRun.m`,
-plus problem builders (`buildLooplessProblem.m`, `buildLinearProblem.m`), convergence
-diagnostics (`psrf.m`) and utilities (`bringToBoundary.m`, `sampleSet.m`, `fast_snp.m`).
+A self-contained Monte-Carlo sampling library (based on loopless flux sampling,
+https://github.com/SysBioengLab/looplessFluxSampler) used by both case studies to draw random
+points from the feasible thermodynamic solution space. Key entry points are
+`looplessFluxSampler.m` / `newLooplessFluxSampler.m`, with the samplers `ADSB.m`
+(Adaptive Directions Sampling on a Box), `ll_ACHRB.m` and `HitAndRun.m`, plus problem
+builders (`buildLooplessProblem.m`, `buildLinearProblem.m`), convergence diagnostics
+(`psrf.m`) and utilities (`bringToBoundary.m`, `sampleSet.m`, `fast_snp.m`).
 
 ### `ecoli/` — Case study 1 (E. coli core)
 
-Self-contained pipeline built around the *E. coli* core model.
+Relevant code used to illustrate the capabilities on the *E. coli* core model.
 
 - `main_e_coli_core.m` — **main entry point**. Runs the three phases end to end:
   (1) model curation (adding thermodynamic data and reducing the model into the working
@@ -104,8 +101,8 @@ Self-contained pipeline built around the *E. coli* core model.
 
 ### `clostridium/` — Case study 2 (C. autoethanogenum)
 
-Same methodology applied to a genome-scale reconstruction of *Clostridium autoethanogenum*,
-with two experimental measurement scenarios (`v1`/`v2`).
+Same methodology applied to a metabolic model of *Clostridium autoethanogenum*,
+under experimentally measured scenarios.
 
 - `main_clostridium.m` — **main entry point** (a function taking a measurement flag and
   sampling options). Builds the thermodynamic model, runs the topology search, discards
@@ -133,7 +130,7 @@ resulting approximation error.
 
 ---
 
-## Organizing logic
+## General rational
 
 Both case studies follow the **same four-stage pipeline**, which explains the parallel
 folder structure (`ecoli/` mirrors `clostridium/`, with the latter prefixing its functions
